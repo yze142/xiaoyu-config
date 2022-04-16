@@ -1,0 +1,206 @@
+linux网络配置
+ root用户打开  /etc/sysconfig/network-scripts/ifcfg-eno16777736
+
+BOOTPROTO=static
+ONBOOT=yes
+IPADDR=192.168.110.128
+GATEWAY=192.168.110.2
+NETMASK=255.255.255.0
+DNS1=114.114.114.114
+   重启 service network restart
+jdk配置环境
+export JAVA_HOME=/usr/javajdk 
+export PATH=$JAVA_HOME/bin:$PATH
+
+设置端口
+/sbin/iptables -I INPUT -p tcp --dport 8080 -j ACCEPT 开启8080端口（暂时开通）
+mysql下载
+wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm
+创建一个新目录 mkdir 
+执行： rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+再次进行服务安装：yum -y install mysql-server
+快捷安装 yum install 
+启动服务器service mysqld start
+ Linux服务器上的mysql密码 alter user 'root'@'localhost' identified by 'Yze142@142'
+grep 'temporary password' /var/log/mysqld.log 数据库查看初始密码
+
+解压操作 tar -xvf
+
+新买的服务器密码 142142ASDFGh
+
+
+
+zookeeper学习
+
+#######################cluster##########################
+server.1=192.168.58.129:2888:3888
+server.2=192.168.58.130:2888:3888
+server.3=192.168.58.131:2888:3888
+server.4=120.78.121.134:2888:3888
+
+
+
+BOOTPROTO=static 
+ONBOOT=yes
+IPADDR=192.168.58.129 
+GATEWAY=192.168.58.2 
+NETMASK=255.255.255.0 
+DNS1=114.114.114.114
+如果不成功就在
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+DEVICE=eth0
+ONBOOT=yes
+BOOTPROTO=static
+IPADDR=192.168.58.129
+NETMASK=255.255.255.0
+GATEWAY=192.168.58.2 
+
+dataDir=/usr/zookeeper/zkData 
+dataLogDir=/usr/zookeeper/zkLog
+
+配置防火墙
+ systemctl stop firewalld.service
+
+
+
+
+
+nginx的配置文件
+upstream sga{ 
+ server 192.168.58.1:8001;
+ server 192.168.58.1:8002; }
+
+server {
+ listen  81; 
+server_name localhost;
+
+
+location / 
+{ proxy_pass http://sga; 
+root html;
+ index index.html index.htm; }
+
+重加载nginx配置文件
+ 1、更改配置判断配置文件是否正确：　　
+　　nginx -t -c /usr/local/nginx/conf/nginx.conf
+　　或者
+　　cd /usr/local/nginx/sbin/nginx -t
+
+       2、重启nginx：　　
+　　kill -HUP 主进程号或进程号文件路径
+　　或者使用
+　　cd /usr/local/nginx/sbin/nginx -s reload
+
+启动FDFS的两条命令
+/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart
+启动storage
+/usr/bin/fdfs_storaged /etc/fdfs/storage.conf restart
+查看端口
+netstat -ntlp
+
+
+
+#全局配置
+global
+#设置日志
+log 127.0.0.1 local0 info
+#当前工作目录
+chroot /usr/local/haproxy
+#用户与用户组
+user haproxy
+group haproxy
+#运行进程ID 
+uid 99
+gid 99
+#守护进程启动 
+daemon
+#最大连接数
+maxconn 4096
+#默认配置 
+defaults
+#应用全局的日志配置
+log global
+#默认的模式mode {tcp|http|health}，TCP是4层，HTTP是7层，health只返回OK
+mode tcp
+#日志类别
+tcplog option tcplog
+#不记录健康检查日志信息
+option dontlognull
+#3次失败则认为服务不可用 
+retries 3 
+#每个进程可用的最大连接数 
+maxconn 2000
+
+
+
+defaults
+#全局配置
+global
+#设置日志
+log 127.0.0.1 local0 info
+#当前工作目录
+chroot /usr/local/haproxy
+#用户与用户组
+user haproxy
+group haproxy
+#运行进程ID 
+uid 99
+gid 99
+#守护进程启动 
+daemon
+#最大连接数
+maxconn 4096
+#默认配置 
+defaults
+#应用全局的日志配置
+log global
+#默认的模式mode {tcp|http|health}，TCP是4层，HTTP是7层，health只返回OK
+mode tcp
+#日志类别
+tcplog option tcplog
+#不记录健康检查日志信息
+option dontlognull
+#3次失败则认为服务不可用 
+retries 3
+#每个进程可用的最大连接数 
+maxconn 2000
+#每个进程可用的最大连接数 
+maxconn 2000
+#连接超时
+timeout connect 5s
+#客户端超时30秒，ha就会发起重新连接 
+timeout client 30s
+#服务端超时15秒，ha就会发起重新连接 
+timeout server 15s
+
+
+#绑定配置 
+listen rabbitmq_cluster
+bind 192.168.58.133:5672 
+#配置TCP模式 
+mode tcp
+#简单的轮询 
+balance roundrobin
+#RabbitMQ集群节点配置，每隔5秒对mq集群做检查，2次正确证明服务可用，3次失败证 明服务不可用
+server A 192.168.58.134:5672 check inter 5000 rise 2 fall 3  
+server B 192.168.58.135:5672 check inter 5000 rise 2 fall 3 
+#haproxy监控页面地址 
+listen monitor 
+bind 192.168.58.133:8100
+ mode http 
+ option httplog 
+ stats enable
+ # 监控页面地址 http://192.168.204.143:8100/monitor
+stats uri /monitor 
+stats refresh 5s
+
+
+
+
+
+
+
+
+
+
+
